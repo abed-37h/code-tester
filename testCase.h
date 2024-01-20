@@ -10,7 +10,7 @@ public:
     testCase(const outType expectedOutput, const inType input);
     void setInput(const inType input);
     void setExpectedOutput(const outType expectedOutput);
-    void calculateOutput(std::function<outType(inType&)> fun);
+    void calculateOutput(const std::function<outType(inType&)>& fun);
     inType getInput(void) const;
     outType getExpectedOutput(void) const;
     outType getOutput(void) const;
@@ -38,7 +38,7 @@ inline void testCase<outType, inType>::setExpectedOutput(const outType expectedO
 }
 
 template <typename outType, typename inType>
-inline void testCase<outType, inType>::calculateOutput(std::function<outType(inType&)> fun) {
+inline void testCase<outType, inType>::calculateOutput(const std::function<outType(inType&)>& fun) {
     this->output = fun(this->input);
 }
 
