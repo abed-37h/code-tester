@@ -18,6 +18,7 @@ public:
     double getTime(unsigned i) const;
     double totalTime(void) const;
     double averageTime(void) const;
+    const testCase<outType, inType>& operator[](unsigned i) const;
 private:
     std::function<outType(inType&)> fun;
     std::vector<testCase<outType, inType>> tcs;
@@ -84,4 +85,9 @@ inline double test<outType, inType>::totalTime(void) const {
 template <typename outType, typename inType>
 inline double test<outType, inType>::averageTime(void) const {
     return totalTime() / countTestCases();
+}
+
+template <typename outType, typename inType>
+inline const testCase<outType, inType>& test<outType, inType>::operator[](unsigned i) const {
+    return tcs[i];
 }
