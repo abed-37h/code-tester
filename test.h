@@ -10,25 +10,28 @@ class test {
 public:
     test() = default;
     test(const std::function<outType(inType&)>& fun);
-    test(const std::function<outType(inType&)>& fun, std::vector<testCase<outType, inType>> tcs);
+    test(const std::function<outType(inType&)>& fun, std::vector<testCase<outType, inType>>& tcs);
     void addTestCase(testCase<outType, inType> tc);
     bool check(void);
     unsigned countTestCases(void) const;
     unsigned countPassedTestCases(void) const;
+    double getTime(unsigned i) const;
+    double totalTime(void) const;
+    double averageTime(void) const;
 private:
     std::function<outType(inType&)> fun;
     std::vector<testCase<outType, inType>> tcs;
+    std::vector<double> vTime;
 };
 
 #endif
 
 template <typename outType, typename inType>
-inline test<outType, inType>::test(const std::function<outType(inType&)>& fun){
-    this->fun = fun;
-}
+inline test<outType, inType>::test(const std::function<outType(inType&)>& fun)
+    :fun(fun) {}
     
 template <typename outType, typename inType>
-inline test<outType, inType>::test(const std::function<outType(inType&)>& fun, std::vector<testCase<outType, inType>> tcs)
+inline test<outType, inType>::test(const std::function<outType(inType&)>& fun, std::vector<testCase<outType, inType>>& tcs)
     : fun(fun), tcs(tcs) {}
 
 template <typename outType, typename inType>
@@ -40,7 +43,8 @@ template <typename outType, typename inType>
 inline bool test<outType, inType>::check(void) {
     bool passed = true;
     for (auto& tc : this->tcs) {
-        tc.calculateOutput(this->fun);
+        auto timeTaken = tc.calculateOutput(this->fun);
+        vTime.push_back(timeTaken);
         if(!tc.check()) passed = false;
     }
 
@@ -60,4 +64,24 @@ inline unsigned test<outType, inType>::countPassedTestCases(void) const {
     }
 
     return count;
+}
+
+template <typename outType, typename inType>
+inline double test<outType, inType>::getTime(unsigned i) const {
+    return vTime[i];
+}
+
+template <typename outType, typename inType>
+inline double test<outType, inType>::totalTime(void) const {
+    double total;
+    for (auto t : vTime) {
+        total += t;
+    }
+
+    return total;
+}
+
+template <typename outType, typename inType>
+inline double test<outType, inType>::averageTime(void) const {
+    return totalTime() / countTestCases();
 }

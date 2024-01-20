@@ -2,6 +2,7 @@
 #define TEST_CASE
 
 #include <functional>
+#include <chrono>
 
 template<typename outType, typename inType>
 class testCase {
@@ -10,7 +11,7 @@ public:
     testCase(const outType expectedOutput, const inType input);
     void setInput(const inType input);
     void setExpectedOutput(const outType expectedOutput);
-    void calculateOutput(const std::function<outType(inType&)>& fun);
+    double calculateOutput(const std::function<outType(inType&)>& fun);
     inType getInput(void) const;
     outType getExpectedOutput(void) const;
     outType getOutput(void) const;
@@ -38,8 +39,15 @@ inline void testCase<outType, inType>::setExpectedOutput(const outType expectedO
 }
 
 template <typename outType, typename inType>
-inline void testCase<outType, inType>::calculateOutput(const std::function<outType(inType&)>& fun) {
+inline double testCase<outType, inType>::calculateOutput(const std::function<outType(inType&)>& fun) {
+    auto start = std::chrono::high_resolution_clock::now();
+
     this->output = fun(this->input);
+    
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-6;
+
+    return duration;
 }
 
 template <typename outType, typename inType>
