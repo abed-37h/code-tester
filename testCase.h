@@ -43,13 +43,22 @@ inline void testCase<outType, inType...>::setExpectedOutput(const outType expect
 
 template <typename outType, typename... inType>
 inline void testCase<outType, inType...>::calculateOutput(const std::function<outType(inType&...)>& fun) {
-    auto start = std::chrono::high_resolution_clock::now();
+    try {
+        auto start = std::chrono::high_resolution_clock::now();
 
-    // expand `this->input` tuple into function args to be passed to `fun`
-    this->output = std::apply(fun, this->input);
+        // expand `this->input` tuple into function args to be passed to `fun`
+        this->output = std::apply(fun, this->input);
+        
+        auto end = std::chrono::high_resolution_clock::now();
+        timeTaken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-6;
+    }
+    catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
+    }
+    catch (...) {
+        std::cerr << "Error\n";
+    }
     
-    auto end = std::chrono::high_resolution_clock::now();
-    timeTaken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-6;
 }
 
 template <typename outType, typename... inType>
