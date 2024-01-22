@@ -15,14 +15,12 @@ public:
     bool check(void);
     unsigned countTestCases(void) const;
     unsigned countPassedTestCases(void) const;
-    double getTime(unsigned i) const;
     double totalTime(void) const;
     double averageTime(void) const;
     const testCase<outType, inType...>& operator[](unsigned i) const;
 private:
     std::function<outType(inType&...)> fun;
     std::vector<testCase<outType, inType...>> tcs;
-    std::vector<double> vTime;
 };
 
 template <typename outType, typename... inType>
@@ -42,8 +40,7 @@ template <typename outType, typename... inType>
 inline bool test<outType, inType...>::check(void) {
     bool passed = true;
     for (auto& tc : this->tcs) {
-        auto timeTaken = tc.calculateOutput(this->fun);
-        vTime.push_back(timeTaken);
+        tc.calculateOutput(this->fun);
         if(!tc.check()) passed = false;
     }
 
@@ -66,15 +63,10 @@ inline unsigned test<outType, inType...>::countPassedTestCases(void) const {
 }
 
 template <typename outType, typename... inType>
-inline double test<outType, inType...>::getTime(unsigned i) const {
-    return vTime[i];
-}
-
-template <typename outType, typename... inType>
 inline double test<outType, inType...>::totalTime(void) const {
     double total;
-    for (auto t : vTime) {
-        total += t;
+    for (auto tc : this->tcs) {
+        total += tc.getTime();
     }
 
     return total;

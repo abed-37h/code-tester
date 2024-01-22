@@ -12,15 +12,17 @@ public:
     testCase(const outType expectedOutput, const inType... input);
     void setInput(const inType... input);
     void setExpectedOutput(const outType expectedOutput);
-    double calculateOutput(const std::function<outType(inType&...)>& fun);
+    void calculateOutput(const std::function<outType(inType&...)>& fun);
     std::tuple<inType...> getInput(void) const;
     outType getExpectedOutput(void) const;
     outType getOutput(void) const;
+    double getTime(void) const;
     bool check(void) const;
 private:
     std::tuple<inType...> input;
     outType output;
     outType expectedOutput;
+    double timeTaken;
 };
 
 template <typename outType, typename... inType>
@@ -40,16 +42,14 @@ inline void testCase<outType, inType...>::setExpectedOutput(const outType expect
 }
 
 template <typename outType, typename... inType>
-inline double testCase<outType, inType...>::calculateOutput(const std::function<outType(inType&...)>& fun) {
+inline void testCase<outType, inType...>::calculateOutput(const std::function<outType(inType&...)>& fun) {
     auto start = std::chrono::high_resolution_clock::now();
 
     // expand `this->input` tuple into function args to be passed to `fun`
     this->output = std::apply(fun, this->input);
     
     auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-6;
-
-    return duration;
+    timeTaken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * 1e-6;
 }
 
 template <typename outType, typename... inType>
@@ -65,6 +65,11 @@ inline outType testCase<outType, inType...>::getExpectedOutput(void) const {
 template <typename outType, typename... inType>
 inline outType testCase<outType, inType...>::getOutput(void) const {
     return this->output;
+}
+
+template <typename outType, typename... inType>
+inline double testCase<outType, inType...>::getTime(void) const {
+    return timeTaken;
 }
 
 template <typename outType, typename... inType>
