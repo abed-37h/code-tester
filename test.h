@@ -64,7 +64,7 @@ inline unsigned test<outType, inType...>::countPassedTestCases(void) const {
 
 template <typename outType, typename... inType>
 inline double test<outType, inType...>::totalTime(void) const {
-    double total;
+    double total = 0;
     for (auto tc : this->tcs) {
         total += tc.getTime();
     }
